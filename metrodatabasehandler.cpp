@@ -180,7 +180,7 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[55].append(56);
     graph[56].append(55);
 
-    //MAGETALINE CONNCTONS
+    //MAGENTA LINE CONNCTONS
     graph[58].append(59);
     graph[59].append(58);
     graph[59].append(60);
@@ -228,7 +228,7 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[65].append(182); //Lajpat Nagar
     graph[18].append(65);
 
-    //YELLW INE CONNETINS
+    //YELLOW LINE CONNECTIONS
     graph[81].append(82);
     graph[82].append(81);
     graph[82].append(83);
@@ -300,7 +300,8 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[114].append(115);
     graph[115].append(114);
 
-    //GREE LIE CONNECTONS    graph[116].append(117);
+    //GREEN LINE CONNECTIONS
+    graph[116].append(117);
     graph[117].append(116);
     graph[117].append(118);
     graph[118].append(117);
@@ -345,7 +346,7 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[20].append(134);  //Kirti Nagar
     graph[134].append(20);
 
-    //ORANE LINE CONNECTIONS
+    //ORANGE LINE CONNECTIONS
     graph[138].append(139);
     graph[139].append(138);
     graph[139].append(140);
@@ -355,7 +356,7 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[97].append(141);  //Central Secretariat
     graph[141].append(97);
 
-    //RED INE CONNECTIONS
+    //RED LINE CONNECTIONS
     graph[142].append(143);
     graph[143].append(142);
     graph[143].append(144);
@@ -411,7 +412,7 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[167].append(168);
     graph[168].append(167);
 
-    //PINKLINE CONNECTIONS
+    //PINK LINE CONNECTIONS
     graph[169].append(170);
     graph[170].append(169);
     graph[170].append(171);
@@ -473,7 +474,7 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[182].append(50);  //Botanical Garden
     graph[50].append(182);
 
-    //VIOLT LINE CONNECTIONS
+    //VIOLET LINE CONNECTIONS
     graph[199].append(200);
     graph[200].append(199);
     graph[200].append(201);

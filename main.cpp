@@ -1,11 +1,11 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include <iostream>
+// #include <iostream>
 
 int main(int argc, char *argv[])
 {
-    std::cout << "before mainwindow";
+ //   std::cout << "before mainwindow";
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

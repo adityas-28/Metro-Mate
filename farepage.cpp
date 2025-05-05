@@ -39,15 +39,15 @@ FarePage::FarePage(QWidget *parent)
     mainLayout->setContentsMargins(30, 30, 30, 30);
 
     QLabel *title = new QLabel("🛤 Plan Your Journey", this);
-    title->setStyleSheet("font-size: 30px; font-weight: bold; font-family: 'Segoe UI'; color: #FFFFFF;");
+    title->setStyleSheet("font-size: 45px; font-weight: bold; font-family: 'Segoe UI'; color: #FFFFFF;");
     mainLayout->addWidget(title, 0, Qt::AlignHCenter);
 
     // Station input section
     QHBoxLayout *stationLayout = new QHBoxLayout();
     stationLayout->setSpacing(20);
 
-    QLabel *fromLabel = new QLabel("📍 From:", this);
-    QLabel *toLabel = new QLabel("🏁 To:", this);
+    QLabel *fromLabel = new QLabel("📍From :", this);
+    QLabel *toLabel = new QLabel("🏁To :", this);
     QString labelStyle = "font-size: 18px; color: white;";
 
     fromLabel->setStyleSheet(labelStyle);
@@ -127,6 +127,7 @@ FarePage::FarePage(QWidget *parent)
     connect(backBtn, &QPushButton::clicked, this, &FarePage::goBackToWelcomePage);
 
     // Filter dropdown
+    QLabel *filter = new QLabel("Advanced Filters :", this);
     filterDropdown = new QComboBox(this);
     filterDropdown->addItem("Minimum Interchange");
     filterDropdown->addItem("Minimum Time");
@@ -135,6 +136,7 @@ FarePage::FarePage(QWidget *parent)
         QComboBox {
             font-size: 14px;
             padding: 3px;
+            margin: 2px, 1px, 1px, 1px;
             background-color: #333;
             color: white;
             border-radius: 2px;
@@ -285,7 +287,7 @@ double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stat
 
     if (!query.exec()) {
         qDebug() << "Error executing query:" << query.lastError().text();
-        return 3.0; // Or throw an exception
+        return 2.1; // Or throw an exception
     }
 
     if (query.next()) {
@@ -348,7 +350,7 @@ QString RoutePlanner::getLine(int stationId) {
     query.bindValue(":stationId", stationId);
 
     if (!query.exec()) {
-        qDebug() << "Error executing query: " << query.lastError().text();
+        qDebug() << "Error executing queryy: " << query.lastError().text();
         return ""; // Return an empty string on error.
     }
     if (query.next())
