@@ -9,6 +9,7 @@
 #include <queue>
 #include <vector>
 #include <QQueue>
+#include <QDebug>
 
 
 RoutePlanner::RoutePlanner() {
@@ -33,7 +34,7 @@ void RoutePlanner::loadGraphFromDB() {
     }
 }
 
-MetroDatabaseHandler& handler = MetroDatabaseHandler::instance();
+// MetroDatabaseHandler& handler = MetroDatabaseHandler::instance();
 
 QList<int> RoutePlanner::findShortestTimePath(int src, int dest) {
 
@@ -87,6 +88,9 @@ QList<int> RoutePlanner::findShortestTimePath(int src, int dest) {
 
 QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
 
+    qDebug() << "Finding path from " << src << " to " << dest;
+
+
     MetroDatabaseHandler handler("data.db");
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
 
@@ -109,7 +113,11 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
         std::greater<>
         > pq;
 
+    pq.push({0.0, src});
+
+    // int i = 0;
     while (!pq.empty()) {
+        qDebug() << "inside calculateShortestPath";
         auto [d, u] = pq.top(); pq.pop();
         if (visited.contains(u)) continue;
         visited.insert(u);

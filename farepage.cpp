@@ -18,10 +18,10 @@ FarePage::FarePage(QWidget *parent)
     MetroDatabaseHandler handler("data.db");
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
 
-    // qDebug() << "Total stations:" << stationMap.size();
-    // for (auto it = stationMap.begin(); it != stationMap.end(); ++it) {
-    //     qDebug() << "Code:" << it.key() << ", Name:" << it.value().first << ", dist : " << QString::number(it.value().second, 'f', 1);;
-    // }
+    qDebug() << "Total stations:" << stationMap.size();
+    for (auto it = stationMap.begin(); it != stationMap.end(); ++it) {
+        qDebug() << "Code:" << it.key() << ", Name:" << it.value().first << ", dist : " << QString::number(it.value().second, 'f', 1);;
+    }
 
     // Assuming you're inside main() or any function:
     //  MetroDatabaseHandler dbHandler;
@@ -29,7 +29,7 @@ FarePage::FarePage(QWidget *parent)
     //  QMap<int, std::pair<QString, double>> stationMap = dbHandler.getStationCodeNameMap();
     QMap<int, QList<int>> graph = handler.createDelhiMetroGraph();  // You must have a method or way to access the graph
 
-    //  handler.printAdjacencyList(stationMap, graph);
+     handler.printAdjacencyList(stationMap, graph);
 
     setWindowTitle("Delhi Metro Fare & Route");
     setStyleSheet("background-color: #1e1e1e; color: #FFFFFF;"); // Dark theme
@@ -222,7 +222,20 @@ void FarePage::calculateRoute() {
         return;
     }
 
-    QList<int> path = planner->findShortestDistancePath(srcId, destId);
+    // Determine route based on selected filter
+    QList<int> path;
+    QString selectedFilter = filterDropdown->currentText();
+
+    if (selectedFilter == "Minimum Distance") {
+        path = planner->findShortestDistancePath(srcId, destId);
+    } else if (selectedFilter == "Minimum Interchange") {
+        path = planner->findMinInterchangePath(srcId, destId);
+    } else if (selectedFilter == "Minimum Time") {
+        path = planner->findShortestTimePath(srcId, destId);
+    } else {
+        // Default fallback to distance-based shortest path
+        path = planner->findShortestDistancePath(srcId, destId);
+    }
 
     if (path.isEmpty()) {
         routeDisplay->setPlainText("No route found between selected stations.");
@@ -241,14 +254,12 @@ void FarePage::calculateRoute() {
         }
     }
 
-    // You need to implement this method in RoutePlanner or MetroDatabaseHandler
     int interchanges = planner->calculateInterchanges(path);
 
     routeDisplay->setPlainText(stationNames.join(" ➡ "));
 
-    // Example fare logic
     double fare = handler.calculateFare(totalDistance);
-    double time = totalDistance * 1.5;  // Assume 1.5 mins per km
+    double time = totalDistance * 1.5;  // Example time estimate
 
     fareLabel->setText("💰 Fare: ₹ " + QString::number(fare, 'f', 0));
     timeLabel->setText("⏱ Estimated Time: " + QString::number(time, 'f', 0) + " mins");
