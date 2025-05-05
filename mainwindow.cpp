@@ -22,13 +22,14 @@ MainWindow::MainWindow(QWidget *parent)
     signupPage = new SignupPage;
     farePage = new FarePage;
 
+    // stack->addWidget(farePage);
     stack->addWidget(welcomePage);
     stack->addWidget(loginPage);
     stack->addWidget(signupPage);
     stack->addWidget(farePage);
 
     setCentralWidget(stack);
-    setFixedSize(600, 500);
+    setFixedSize(1000, 700);
 
     connect(welcomePage->getLoginButton(), &QPushButton::clicked, this, &MainWindow::showLoginPage);
     connect(welcomePage->getSignupButton(), &QPushButton::clicked, this, &MainWindow::showSignupPage);

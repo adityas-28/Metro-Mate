@@ -39,7 +39,7 @@ FarePage::FarePage(QWidget *parent)
     mainLayout->setContentsMargins(30, 30, 30, 30);
 
     QLabel *title = new QLabel("🛤 Plan Your Journey", this);
-    title->setStyleSheet("font-size: 26px; font-weight: bold; font-family: 'Segoe UI'; color: #FFFFFF;");
+    title->setStyleSheet("font-size: 30px; font-weight: bold; font-family: 'Segoe UI'; color: #FFFFFF;");
     mainLayout->addWidget(title, 0, Qt::AlignHCenter);
 
     // Station input section
@@ -48,7 +48,7 @@ FarePage::FarePage(QWidget *parent)
 
     QLabel *fromLabel = new QLabel("📍 From:", this);
     QLabel *toLabel = new QLabel("🏁 To:", this);
-    QString labelStyle = "font-size: 15px; color: white;";
+    QString labelStyle = "font-size: 18px; color: white;";
 
     fromLabel->setStyleSheet(labelStyle);
     toLabel->setStyleSheet(labelStyle);
@@ -77,6 +77,7 @@ FarePage::FarePage(QWidget *parent)
             }
         )");
         box->setMinimumWidth(220);
+        box->setMinimumHeight(45);
     }
 
     stationLayout->addWidget(fromLabel);
@@ -93,18 +94,40 @@ FarePage::FarePage(QWidget *parent)
             font-weight: bold;
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 5px 10px;
             border-radius: 6px;
         }
         QPushButton:hover {
             background-color: #45a049;
         }
     )");
+    getFareButton->setMinimumWidth(150);
+    getFareButton->setMinimumHeight(36);
     mainLayout->addWidget(getFareButton, 0, Qt::AlignCenter);
+
+    // Back button
+    backBtn = new QPushButton("Back", this);
+    backBtn->setStyleSheet(R"(
+        QPushButton {
+            font-size: 15px;
+            font-weight: bold;
+            background-color: #FF6347;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+        QPushButton:hover {
+            background-color: #FF4500;
+        }
+    )");
+    backBtn->setMinimumWidth(150);
+    backBtn->setMinimumHeight(36);
+    mainLayout->addWidget(backBtn, 0, Qt::AlignCenter);
+
+    connect(backBtn, &QPushButton::clicked, this, &FarePage::goBackToWelcomePage);
 
     // Filter dropdown
     filterDropdown = new QComboBox(this);
-    filterDropdown->addItem("🔍 Advanced Filter");
     filterDropdown->addItem("Minimum Interchange");
     filterDropdown->addItem("Minimum Time");
     filterDropdown->addItem("Minimum Distance");
@@ -118,24 +141,9 @@ FarePage::FarePage(QWidget *parent)
         }
     )");
 
-    // Back button
-    backBtn = new QPushButton("Back", this);
-    backBtn->setStyleSheet(R"(
-        QPushButton {
-            font-size: 15px;
-            background-color: #FF6347;
-            color: white;
-            padding: 5px 5px;
-            border-radius: 3px;
-        }
-        QPushButton:hover {
-            background-color: #FF4500;
-        }
-    )");
-    mainLayout->addWidget(backBtn, 0, Qt::AlignCenter);
-
-    connect(backBtn, &QPushButton::clicked, this, &FarePage::goBackToWelcomePage);
     filterDropdown->setMinimumWidth(220);
+    filterDropdown->setMinimumWidth(220);
+    filterDropdown->setMinimumHeight(45);
     mainLayout->addWidget(filterDropdown, 0, Qt::AlignCenter);
 
     // Info labels
