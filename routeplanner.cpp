@@ -37,6 +37,7 @@ void RoutePlanner::loadGraphFromDB() {
 // MetroDatabaseHandler& handler = MetroDatabaseHandler::instance();
 
 QList<int> RoutePlanner::findShortestTimePath(int src, int dest) {
+    int counter = 0;
 
     MetroDatabaseHandler handler("data.db");
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
@@ -58,6 +59,7 @@ QList<int> RoutePlanner::findShortestTimePath(int src, int dest) {
         std::greater<>
         > pq;
 
+    bool flag = true;
 
     for (auto key : stationMap.keys()) dist[key] = INF;
     dist[src] = 0.0;
@@ -65,6 +67,11 @@ QList<int> RoutePlanner::findShortestTimePath(int src, int dest) {
     pq.push({0.0, src});
 
     while (!pq.empty()) {
+        counter++;
+        if(counter > 300) {
+            flag = false;
+            break;
+        }
         auto [time, u] = pq.top(); pq.pop();
         if (visited.contains(u)) continue;
         visited.insert(u);
@@ -81,6 +88,10 @@ QList<int> RoutePlanner::findShortestTimePath(int src, int dest) {
     }
 
     QList<int> path;
+    counter = 0;
+    if(!flag) {
+        return path;
+    }
     for (int at = dest; at != src; at = parent[at]) path.prepend(at);
     path.prepend(src);
     return path;
@@ -114,9 +125,16 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
         > pq;
 
     pq.push({0.0, src});
+    int counter = 0;
+    bool flag = true;
 
     // int i = 0;
     while (!pq.empty()) {
+        counter++;
+        if(counter > 300) {
+            flag = false;
+            break;
+        }
         qDebug() << "inside calculateShortestPath";
         auto [d, u] = pq.top(); pq.pop();
         if (visited.contains(u)) continue;
@@ -132,7 +150,11 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
         }
     }
 
+    counter = 0;
     QList<int> path;
+    if(!flag) {
+        return path;
+    }
     for (int at = dest; at != src; at = parent[at]) path.prepend(at);
     path.prepend(src);
     return path;
@@ -155,7 +177,14 @@ QList<int> RoutePlanner::findMinInterchangePath(int src, int dest) {
     visited.insert(src);
     q.enqueue(src);
 
+    bool flag = true;
+    int counter = 0;
     while (!q.isEmpty()) {
+        counter++;
+        if(counter > 300) {
+            flag = false;
+            break;
+        }
         int u = q.dequeue();
         if (u == dest) break;
         for (int v : graph[u]) {
@@ -166,8 +195,11 @@ QList<int> RoutePlanner::findMinInterchangePath(int src, int dest) {
             }
         }
     }
-
+    counter = 0;
     QList<int> path;
+    if(!flag) {
+        return path;
+    }
     for (int at = dest; at != src; at = parent[at]) path.prepend(at);
     path.prepend(src);
     return path;

@@ -111,12 +111,30 @@ FarePage::FarePage(QWidget *parent)
     filterDropdown->setStyleSheet(R"(
         QComboBox {
             font-size: 14px;
-            padding: 6px;
+            padding: 3px;
             background-color: #333;
             color: white;
-            border-radius: 4px;
+            border-radius: 2px;
         }
     )");
+
+    // Back button
+    backBtn = new QPushButton("Back", this);
+    backBtn->setStyleSheet(R"(
+        QPushButton {
+            font-size: 15px;
+            background-color: #FF6347;
+            color: white;
+            padding: 5px 5px;
+            border-radius: 3px;
+        }
+        QPushButton:hover {
+            background-color: #FF4500;
+        }
+    )");
+    mainLayout->addWidget(backBtn, 0, Qt::AlignCenter);
+
+    connect(backBtn, &QPushButton::clicked, this, &FarePage::goBackToWelcomePage);
     filterDropdown->setMinimumWidth(220);
     mainLayout->addWidget(filterDropdown, 0, Qt::AlignCenter);
 
@@ -145,23 +163,6 @@ FarePage::FarePage(QWidget *parent)
     routeDisplay->setMinimumHeight(100);
     mainLayout->addWidget(routeDisplay);
 
-    // Back button
-    backBtn = new QPushButton("Back", this);
-    backBtn->setStyleSheet(R"(
-        QPushButton {
-            font-size: 15px;
-            background-color: #FF6347;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-        }
-        QPushButton:hover {
-            background-color: #FF4500;
-        }
-    )");
-    mainLayout->addWidget(backBtn, 0, Qt::AlignCenter);
-
-    connect(backBtn, &QPushButton::clicked, this, &FarePage::goBackToWelcomePage);
 
     mydb = QSqlDatabase::addDatabase("QSQLITE");
     QString dbPath = QDir::currentPath() + "/data.db";
