@@ -1,4 +1,5 @@
 debug/Metrodatabasehandler.o
+debug/disjointset.o
 debug/farepage.o
 debug/loginpage.o
 debug/main.o

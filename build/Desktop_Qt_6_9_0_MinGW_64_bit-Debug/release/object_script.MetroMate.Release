@@ -1,4 +1,5 @@
 release/Metrodatabasehandler.o
+release/disjointset.o
 release/farepage.o
 release/loginpage.o
 release/main.o

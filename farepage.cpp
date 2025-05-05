@@ -285,7 +285,7 @@ double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stat
 
     if (!query.exec()) {
         qDebug() << "Error executing query:" << query.lastError().text();
-        return 0.0; // Or throw an exception
+        return 3.0; // Or throw an exception
     }
 
     if (query.next()) {
@@ -327,15 +327,15 @@ int RoutePlanner::calculateInterchanges(const QList<int>& path) {
 }
 
 double MetroDatabaseHandler::calculateFare(double distance) {
-    if (distance <= 2) {
+    if (distance <= 9) {
         return 10.0;
-    } else if (distance <= 5) {
+    } else if (distance <= 15) {
         return 20.0;
-    } else if (distance <= 12) {
+    } else if (distance <= 25) {
         return 30.0;
-    } else if (distance <= 21) {
+    } else if (distance <= 35) {
         return 40.0;
-    } else if (distance <= 32) {
+    } else if (distance <= 45) {
         return 50.0;
     } else {
         return 60.0;

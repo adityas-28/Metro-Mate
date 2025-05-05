@@ -7,6 +7,7 @@ CONFIG += c++17
 
 SOURCES += \
     Metrodatabasehandler.cpp \
+    disjointset.cpp \
     farepage.cpp \
     loginpage.cpp \
     main.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
 
 HEADERS += \
     Metrodatabasehandler.h \
+    disjointset.h \
     farepage.h \
     loginpage.h \
     mainwindow.h \
