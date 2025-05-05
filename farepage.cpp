@@ -39,7 +39,7 @@ FarePage::FarePage(QWidget *parent)
     mainLayout->setContentsMargins(30, 30, 30, 30);
 
     QLabel *title = new QLabel("🛤 Plan Your Journey", this);
-    title->setStyleSheet("font-size: 45px; font-weight: bold; font-family: 'Segoe UI'; color: #FFFFFF;");
+    title->setStyleSheet("font-size: 42px; font-weight: bold; font-family: 'Segoe UI'; color: #FFFFFF;");
     mainLayout->addWidget(title, 0, Qt::AlignHCenter);
 
     // Station input section
@@ -76,8 +76,8 @@ FarePage::FarePage(QWidget *parent)
                 selection-background-color: #555;
             }
         )");
-        box->setMinimumWidth(220);
-        box->setMinimumHeight(45);
+        box->setMinimumWidth(200);
+        box->setMinimumHeight(40);
     }
 
     stationLayout->addWidget(fromLabel);
@@ -127,26 +127,38 @@ FarePage::FarePage(QWidget *parent)
     connect(backBtn, &QPushButton::clicked, this, &FarePage::goBackToWelcomePage);
 
     // Filter dropdown
-    QLabel *filter = new QLabel("Advanced Filters :", this);
+
+    // Step 1: Create filterDropdown first
     filterDropdown = new QComboBox(this);
     filterDropdown->addItem("Minimum Interchange");
     filterDropdown->addItem("Minimum Time");
     filterDropdown->addItem("Minimum Distance");
     filterDropdown->setStyleSheet(R"(
-        QComboBox {
-            font-size: 14px;
-            padding: 3px;
-            margin: 2px, 1px, 1px, 1px;
-            background-color: #333;
-            color: white;
-            border-radius: 2px;
-        }
-    )");
+    QComboBox {
+        font-size: 14px;
+        padding: 3px;
+        margin: 2px, 1px, 1px, 1px;
+        background-color: #333;
+        color: white;
+        border-radius: 2px;
+    }
+)");
 
-    filterDropdown->setMinimumWidth(220);
-    filterDropdown->setMinimumWidth(220);
-    filterDropdown->setMinimumHeight(45);
-    mainLayout->addWidget(filterDropdown, 0, Qt::AlignCenter);
+    filterDropdown->setMinimumWidth(200);
+    filterDropdown->setMinimumHeight(40);
+
+    // Step 2: Create label
+    QLabel *filterLabel = new QLabel("Advanced Filters :", this);
+    filterLabel->setStyleSheet("color: white; font-size: 14px;");
+
+    // Step 3: Create layout and add both label and dropdown
+    QVBoxLayout *filterLayout = new QVBoxLayout();
+    filterLayout->addWidget(filterLabel, 0, Qt::AlignCenter);
+    filterLayout->addWidget(filterDropdown, 0, Qt::AlignCenter);
+
+    // Step 4: Add the layout to main layout
+    mainLayout->addLayout(filterLayout);
+
 
     // Info labels
     fareLabel = new QLabel("💰 Fare: ₹ --", this);
