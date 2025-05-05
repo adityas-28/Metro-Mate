@@ -210,6 +210,7 @@ void FarePage::populateStations() {
 
 void FarePage::calculateRoute() {
     MetroDatabaseHandler handler("data.db");
+    // RoutePlanner rp;
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
     QMap<int, QList<int>> graph = handler.createDelhiMetroGraph();
 
@@ -269,7 +270,7 @@ void FarePage::calculateRoute() {
 
     routeDisplay->setPlainText(stationNames.join(" ➡ "));
 
-    double fare = handler.calculateFare(totalDistance);
+    double fare = handler.calculateFare(path);
     double time = totalDistance * 1.5;  // Example time estimate
 
     fareLabel->setText("💰 Fare: ₹ " + QString::number(fare, 'f', 0));
@@ -328,16 +329,22 @@ int RoutePlanner::calculateInterchanges(const QList<int>& path) {
     return interchanges;
 }
 
-double MetroDatabaseHandler::calculateFare(double distance) {
-    if (distance <= 9) {
+int RoutePlanner::calculatePathLength(const QList<int>& path) {
+    return path.size();
+}
+
+double MetroDatabaseHandler::calculateFare(const QList<int>& path) {
+    RoutePlanner *planner;
+    int pathLength = planner->calculatePathLength(path);
+    if (pathLength <= 3) {
         return 10.0;
-    } else if (distance <= 15) {
+    } else if (pathLength <= 6) {
         return 20.0;
-    } else if (distance <= 25) {
+    } else if (pathLength <= 9) {
         return 30.0;
-    } else if (distance <= 35) {
+    } else if (pathLength <= 12) {
         return 40.0;
-    } else if (distance <= 45) {
+    } else if (pathLength <= 15) {
         return 50.0;
     } else {
         return 60.0;

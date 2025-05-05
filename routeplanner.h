@@ -17,6 +17,7 @@ public:
     QList<int> findMinInterchangePath(int src, int dest);      // BFS
     int calculateInterchanges(const QList<int>& path);
     QString getLine(int stationId);
+    int calculatePathLength(const QList<int>& path);
 
 private:
     QMap<QString, QVector<QPair<QString, int>>> adjList; // station -> [(neighbor, distance)]

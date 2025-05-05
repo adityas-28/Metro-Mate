@@ -16,7 +16,7 @@ public:
                             const QMap<int, QList<int>>& graph);
     QMap<int, std::pair<QString, double>> getStationCodeNameMap();
 
-    double calculateFare(double distance);
+    double calculateFare(const QList<int>& path);
     QString getLine(int stationId) const;
     static MetroDatabaseHandler& instance();
     double getDistanceBetweenStations(int stationId1, int stationId2);
