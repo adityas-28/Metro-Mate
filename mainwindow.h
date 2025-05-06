@@ -21,7 +21,7 @@ private slots:
     void showLoginPage2();
     void showSignupPage();
     void showFarePage();
-    void showWelcomePage();  // ✅ This line was missing
+    void showWelcomePage();
     void setupDatabase();
 
 private:

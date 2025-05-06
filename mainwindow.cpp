@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     stack->addWidget(farePage);
 
     setCentralWidget(stack);
-    setFixedSize(1000, 700);
+    setFixedSize(1050, 700);
 
     connect(welcomePage->getLoginButton(), &QPushButton::clicked, this, &MainWindow::showLoginPage);
     connect(welcomePage->getSignupButton(), &QPushButton::clicked, this, &MainWindow::showSignupPage);

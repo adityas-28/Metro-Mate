@@ -12,9 +12,9 @@ public:
     RoutePlanner();
     void loadGraphFromDB();
     QStringList findShortestPath(const QString &source, const QString &destination, int &totalDistance);
-    QList<int> findShortestTimePath(int src, int dest);        // Dijkstra with time weights
-    QList<int> findShortestDistancePath(int src, int dest);    // Dijkstra with distance weights
-    QList<int> findMinInterchangePath(int src, int dest);      // BFS
+    QList<int> findShortestTimePath(int src, int dest);
+    QList<int> findShortestDistancePath(int src, int dest);
+    QList<int> findMinInterchangePath(int src, int dest);
     int calculateInterchanges(const QList<int>& path);
     std::pair<QString, QString> getLine(int stationId);
     int calculatePathLength(const QList<int>& path);

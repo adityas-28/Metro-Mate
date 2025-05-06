@@ -17,7 +17,7 @@ WelcomePage::WelcomePage(QWidget *parent)
     // Title with custom styles (No white background)
     QLabel *title = new QLabel("🚇 <span style='color:#2E8B57;'> Welcome to MetroMate</span>", this);
     title->setStyleSheet(R"(
-        font-size: 32px;
+        font-size: 60px;
         font-weight: 600;
         font-family: 'Segoe UI', sans-serif;
         padding: 10px;
@@ -41,7 +41,7 @@ WelcomePage::WelcomePage(QWidget *parent)
     // Button style (smooth hover effects and padding)
     QString btnStyle = R"(
         QPushButton {
-            font-size: 18px;
+            font-size: 30px;
             font-family: 'Segoe UI', sans-serif;
             padding: 12px 30px;
             border-radius: 12px;

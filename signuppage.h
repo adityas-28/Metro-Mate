@@ -8,14 +8,14 @@
 #include <QDir>
 
 class SignupPage : public QWidget {
-    Q_OBJECT  // This is essential for Qt signal/slot system
+    Q_OBJECT
 
 public:
     explicit SignupPage(QWidget *parent = nullptr);
     QPushButton* getSignupButton() const;
 
 signals:
-    void goBackToWelcomePage();  // Declare the signal to go back to the welcome page
+    void goBackToWelcomePage();
     void goBackToLoginPage();
 
 private slots:

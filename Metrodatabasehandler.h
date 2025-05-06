@@ -29,8 +29,7 @@ private:
     QSqlDatabase mydb;
     QString databasePath;
     void printGraph();
-    MetroDatabaseHandler();  // private constructor
-
+    MetroDatabaseHandler();
     void openConnection();
    // static QMap<int, QList<int>> createDelhiMetroGraph();
     // void printAdjacencyList(const QMap<int, std::pair<QString, double>>& stationMap,

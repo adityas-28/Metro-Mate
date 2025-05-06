@@ -19,10 +19,10 @@ public:
 
 signals:
     void goBackToWelcomePage();
-    void loginSuccess(); // emit this on successful login
+    void loginSuccess();
 
 private slots:
-    void handleLogin(); // <-- ADD THIS LINE inside slots
+    void handleLogin();
 
 private:
     QLineEdit *usernameLineEdit;

@@ -13,19 +13,19 @@
 SignupPage::SignupPage(QWidget *parent)
     : QWidget(parent)
 {
-    setStyleSheet("background-color: #f4f4f4;");
+    setStyleSheet("background-color: #000000;");
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(20);
     layout->setContentsMargins(40, 40, 40, 40);
 
-    QLabel *title = new QLabel("📝 <span style='color:#2E8B57;'> Signup for MetroMate </span>", this);
+    QLabel *title = new QLabel("📝 <span style='color:#ffffff'>  Signup for MetroMate </span>", this);
     title->setStyleSheet(R"(
-        font-size: 24px;
+        font-size: 45px;
         font-weight: 600;
         font-family: 'Segoe UI';
         padding: 10px;
-        color: #333;
+        color: #000000;
     )");
     layout->addWidget(title, 0, Qt::AlignHCenter);
 
@@ -36,13 +36,13 @@ SignupPage::SignupPage(QWidget *parent)
     // --- Corrected here ---
     usernameLineEdit = new QLineEdit(this);
     usernameLineEdit->setPlaceholderText("Choose Username");
-    usernameLineEdit->setStyleSheet("font-size: 16px; padding: 8px; color: black;");
+    usernameLineEdit->setStyleSheet("font-size: 16px; padding: 8px; color: grey;");
     layout->addWidget(usernameLineEdit);
 
     passwordLineEdit = new QLineEdit(this);
     passwordLineEdit->setPlaceholderText("Create Password");
     passwordLineEdit->setEchoMode(QLineEdit::Password);
-    passwordLineEdit->setStyleSheet("font-size: 16px; padding: 8px; color: black;");
+    passwordLineEdit->setStyleSheet("font-size: 16px; padding: 8px; color: grey;");
     layout->addWidget(passwordLineEdit);
     // -----------------------
 

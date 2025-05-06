@@ -14,19 +14,19 @@
 LoginPage::LoginPage(QWidget *parent)
     : QWidget(parent)
 {
-    setStyleSheet("background-color: #f4f4f4;");
+    setStyleSheet("background-color: #000000;");
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(20);
     layout->setContentsMargins(40, 60, 40, 60);
 
-    QLabel *title = new QLabel("🔐 <span style='color:#2E8B57;'> Login to MetroMate </span>", this);
+    QLabel *title = new QLabel("🔐 <span style='color:#00000;'> Login to MetroMate </span>", this);
     title->setStyleSheet(R"(
-        font-size: 26px;
+        font-size: 45px;
         font-weight: 600;
         font-family: 'Segoe UI';
         padding: 10px;
-        color: #333;
+        color: #ffffff;
     )");
     layout->addWidget(title, 0, Qt::AlignHCenter);
 

@@ -148,8 +148,9 @@ FarePage::FarePage(QWidget *parent)
     filterDropdown->setMinimumHeight(40);
 
     // Step 2: Create label
-    QLabel *filterLabel = new QLabel("Advanced Filters :", this);
-    filterLabel->setStyleSheet("color: white; font-size: 14px;");
+    QLabel *filterLabel = new QLabel("🔎 Advanced Filters :", this);
+    filterLabel->setStyleSheet(labelStyle);
+    // filterLabel->setStyleSheet("color: white; font-size: 14px;");
 
     // Step 3: Create layout and add both label and dropdown
     QVBoxLayout *filterLayout = new QVBoxLayout();

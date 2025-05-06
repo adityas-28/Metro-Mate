@@ -9,11 +9,11 @@ private:
     QVector<int> parent;
 
 public:
-    DisjointSet(int n);                // Constructor
-    int findUParent(int node);         // Find with path compression
-    void unionBySize(int u, int v);    // Union by size
-    int findSize(int n);               // Return size of component
-    bool isConnected(int u, int v);    // Check if two nodes are in same set
+    DisjointSet(int n);
+    int findUParent(int node);
+    void unionBySize(int u, int v);
+    int findSize(int n);
+    bool isConnected(int u, int v);
 };
 
 #endif // DISJOINTSET_H
