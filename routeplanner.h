@@ -16,7 +16,7 @@ public:
     QList<int> findShortestDistancePath(int src, int dest);    // Dijkstra with distance weights
     QList<int> findMinInterchangePath(int src, int dest);      // BFS
     int calculateInterchanges(const QList<int>& path);
-    QString getLine(int stationId);
+    std::pair<QString, QString> getLine(int stationId);
     int calculatePathLength(const QList<int>& path);
 
 private:

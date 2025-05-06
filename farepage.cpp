@@ -286,8 +286,6 @@ void FarePage::calculateRoute() {
     interchangeLabel->setText("🔁 Interchanges: " + QString::number(interchanges));
 }
 
-
-
 double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stationId2) {
     QSqlQuery query;
     query.prepare("SELECT Distance FROM distance_between_stations WHERE Station1_Code = :stationId1 AND Station2_Code = :stationId2");
@@ -324,16 +322,27 @@ int RoutePlanner::calculateInterchanges(const QList<int>& path) {
     if (path.size() <= 2) return 0;
 
     int interchanges = 0;
-    QString previousLine = getLine(path[0]);
-    QString currentLine;
+
+    auto prevNode = getLine(path[0]);
+    QString previousLine = prevNode.first;
+    QString previousName = prevNode.second;
 
     for (int i = 1; i < path.size(); ++i) {
-        currentLine = getLine(path[i]);
+        auto currNode = getLine(path[i]);
+        QString currentLine = currNode.first;
+        QString currentName = currNode.second;
+
+        if ((i == 1 || i == path.size() - 1) && (currentName == previousName)) {
+            previousLine = currentLine;
+            continue;
+        }
+
         if (currentLine != previousLine) {
             interchanges++;
             previousLine = currentLine;
         }
     }
+
     return interchanges;
 }
 
@@ -359,19 +368,23 @@ double MetroDatabaseHandler::calculateFare(const QList<int>& path) {
     }
 }
 
-QString RoutePlanner::getLine(int stationId) {
+std::pair<QString, QString> RoutePlanner::getLine(int stationId) {
     QSqlQuery query;
-    query.prepare("SELECT Line FROM metro_database WHERE Station_Code = :stationId");
+    query.prepare("SELECT Line, station_name FROM metro_database WHERE Station_Code = :stationId");
     query.bindValue(":stationId", stationId);
 
     if (!query.exec()) {
         qDebug() << "Error executing queryy: " << query.lastError().text();
-        return ""; // Return an empty string on error.
+        return std::make_pair("", ""); // Return an empty string on error.
     }
-    if (query.next())
-        return query.value(0).toString();
+    if (query.next()){
+        QString line = query.value(0).toString();
+        QString name = query.value(1).toString();
+        QString strippedName = name.section(" [Conn:", 0, 0).trimmed();
+        return std::make_pair(line, strippedName);
+    }
     else
-        return "";
+        return std::make_pair("", "");
 }
 
 QString getLine(int stationId) {
