@@ -75,91 +75,11 @@ bool DisjointSet::isConnected(int u, int v) {
 
 // MetroDatabaseHandler& handler = MetroDatabaseHandler::instance();
 QList<int> RoutePlanner::findShortestTimePath(int src, int dest) {
-    qDebug() << "Finding shortest time path from" << src << "to" << dest;
-
-    MetroDatabaseHandler handler("data.db");
-    QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
-    QMap<int, QList<int>> graph = handler.createDelhiMetroGraph();
-
-    const double INF = 1e9;
-    const double speed = 30.0; // km/h
-    QMap<int, double> dist;
-    QMap<int, int> parent;
-    QSet<int> visited;
-
-    // Optional: Check if src and dest are connected
-    DisjointSet ds(1000);
-    for (auto u : graph.keys()) {
-        for (int v : graph[u]) {
-            ds.unionBySize(u, v);
-        }
-    }
-
-    if (!ds.isConnected(src, dest)) {
-        qDebug() << "Stations are not connected!";
-        QMessageBox::warning(nullptr, "Path Error", "Selected stations are not connected!");
-        return {};
-    }
-
-    // Initialize distances
-    for (int key : stationMap.keys()) dist[key] = INF;
-    dist[src] = 0.0;
-
-    using PDI = std::pair<double, int>;
-    std::priority_queue<PDI, std::vector<PDI>, std::greater<>> pq;
-    pq.push({0.0, src});
-
-    while (!pq.empty()) {
-        auto [currTime, u] = pq.top(); pq.pop();
-        if (visited.contains(u)) continue;
-        visited.insert(u);
-
-        for (int v : graph[u]) {
-            double distance = stationMap[v].second; // assuming this is the correct weight
-            double time = distance / speed;
-
-            if (dist[u] + time < dist[v]) {
-                dist[v] = dist[u] + time;
-                parent[v] = u;
-                pq.push({dist[v], v});
-            }
-        }
-    }
-
-    // Reconstruct path
-    QList<int> path;
-
-    if (src == dest) {
-        path.append(src);
-        return path;
-    }
-
-    if (!parent.contains(dest)) {
-        qDebug() << "No valid path found.";
-        QMessageBox::warning(nullptr, "Path Error", "No valid path found between the stations.");
-        return {};
-    }
-
-    for (int at = dest; at != src; ) {
-        path.prepend(at);
-        if (!parent.contains(at)) {
-            qDebug() << "Failed to reconstruct path at station " << at;
-            QMessageBox::warning(nullptr, "Path Error", "Path reconstruction failed.");
-            return {};
-        }
-        at = parent[at];
-    }
-
-    path.prepend(src);
-    return path;
-}
-
-QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
     qDebug() << "Finding path from " << src << " to " << dest;
 
     MetroDatabaseHandler handler("data.db");
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
-    QMap<int, QList<int>> graph = handler.createDelhiMetroGraph();
+    QMap<int, QList<std::pair<int, double>>> graph = handler.createDelhiMetroGraph();
 
     const double INF = 1e9;
     QMap<int, double> dist;
@@ -169,7 +89,8 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
     // Disjoint Set: Check if src and dest are connected
     DisjointSet ds(1000);
     for (auto u : graph.keys()) {
-        for (int v : graph[u]) {
+        for (const auto& neighbor : graph[u]) {
+            int v = neighbor.first;
             ds.unionBySize(u, v);
         }
     }
@@ -193,8 +114,10 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
         if (visited.contains(u)) continue;
         visited.insert(u);
 
-        for (int v : graph[u]) {
-            double weight = stationMap[v].second;
+        for (const auto& neighbor : graph[u]) {
+            int v = neighbor.first;
+            double weight = neighbor.second;
+
             if (dist[u] + weight < dist[v]) {
                 dist[v] = dist[u] + weight;
                 parent[v] = u;
@@ -216,7 +139,7 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
         return {};
     }
 
-    for (int at = dest; at != src; ) {
+    for (int at = dest; at != src;) {
         path.prepend(at);
         if (!parent.contains(at)) {
             qDebug() << "Failed to reconstruct path at station " << at;
@@ -230,11 +153,89 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
     return path;
 }
 
+QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
+    qDebug() << "Finding path from " << src << " to " << dest;
+
+    MetroDatabaseHandler handler("data.db");
+    QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
+    QMap<int, QList<std::pair<int, double>>> graph = handler.createDelhiMetroGraph();
+
+    const double INF = 1e9;
+    QMap<int, double> dist;
+    QMap<int, int> parent;
+    QSet<int> visited;
+
+    // Disjoint Set: Check if src and dest are connected
+    DisjointSet ds(1000);
+    for (auto u : graph.keys()) {
+        for (const auto& neighbor : graph[u]) {
+            int v = neighbor.first;
+            ds.unionBySize(u, v);
+        }
+    }
+
+    if (!ds.isConnected(src, dest)) {
+        qDebug() << "Stations are not connected!";
+        QMessageBox::warning(nullptr, "Path Error", "Selected stations are not connected!");
+        return {};
+    }
+
+    // Dijkstra's algorithm
+    for (auto key : stationMap.keys()) dist[key] = INF;
+    dist[src] = 0.0;
+
+    using PDI = std::pair<double, int>;
+    std::priority_queue<PDI, std::vector<PDI>, std::greater<>> pq;
+    pq.push({0.0, src});
+
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (visited.contains(u)) continue;
+        visited.insert(u);
+
+        for (const auto& neighbor : graph[u]) {
+            int v = neighbor.first;
+            double weight = neighbor.second;
+
+            if (dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+
+    // Reconstruct path safely
+    QList<int> path;
+    if (src == dest) {
+        path.append(src);
+        return path;
+    }
+
+    if (!parent.contains(dest)) {
+        qDebug() << "No valid path found.";
+        QMessageBox::warning(nullptr, "Path Error", "No valid path found between the stations.");
+        return {};
+    }
+
+    for (int at = dest; at != src;) {
+        path.prepend(at);
+        if (!parent.contains(at)) {
+            qDebug() << "Failed to reconstruct path at station " << at;
+            QMessageBox::warning(nullptr, "Path Error", "Path reconstruction failed.");
+            return {};
+        }
+        at = parent[at];
+    }
+
+    path.prepend(src);
+    return path;
+}
 
 QList<int> RoutePlanner::findMinInterchangePath(int src, int dest) {
     MetroDatabaseHandler handler("data.db");
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
-    QMap<int, QList<int>> graph = handler.createDelhiMetroGraph();
+    QMap<int, QList<std::pair<int, double>>> graph = handler.createDelhiMetroGraph();
 
     QMap<int, int> parent;
     QSet<int> visited;
@@ -252,7 +253,8 @@ QList<int> RoutePlanner::findMinInterchangePath(int src, int dest) {
             break;
         }
 
-        for (int v : graph[u]) {
+        for (auto v0 : graph[u]) {
+            int v = v0.first;
             if (!visited.contains(v)) {
                 visited.insert(v);
                 parent[v] = u;
@@ -262,16 +264,24 @@ QList<int> RoutePlanner::findMinInterchangePath(int src, int dest) {
     }
 
     QList<int> path;
-    if (!found || !parent.contains(dest)) {
-        qDebug() << "No path found between" << src << "and" << dest;
+
+    if (src == dest) {
+        path.append(src);
         return path;
     }
 
-    // Reconstruct path with safety
+    if (!found || !parent.contains(dest)) {
+        qDebug() << "No path found between" << src << "and" << dest;
+        QMessageBox::warning(nullptr, "Path Error", "No valid path found between the stations.");
+        return {};
+    }
+
+    // Reconstruct path safely
     for (int at = dest; at != src; ) {
         path.prepend(at);
         if (!parent.contains(at)) {
-            qDebug() << "Broken path reconstruction at" << at;
+            qDebug() << "Path reconstruction failed at station" << at;
+            QMessageBox::warning(nullptr, "Path Error", "Path reconstruction failed.");
             return {};
         }
         at = parent[at];

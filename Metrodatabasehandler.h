@@ -10,10 +10,10 @@ public:
     MetroDatabaseHandler(const QString& dbPath);
     ~MetroDatabaseHandler();
 
-    static QMap<int, QList<int>> createDelhiMetroGraph();
+    QMap<int, QList<std::pair<int, double>>> createDelhiMetroGraph();
 
     void printAdjacencyList(const QMap<int, std::pair<QString, double>>& stationMap,
-                            const QMap<int, QList<int>>& graph);
+                            const QMap<int, QList<std::pair<int, double>>>& graph);
     QMap<int, std::pair<QString, double>> getStationCodeNameMap();
 
     double calculateFare(const QList<int>& path);

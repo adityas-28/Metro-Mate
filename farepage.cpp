@@ -27,9 +27,9 @@ FarePage::FarePage(QWidget *parent)
     //  MetroDatabaseHandler dbHandler;
 
     //  QMap<int, std::pair<QString, double>> stationMap = dbHandler.getStationCodeNameMap();
-    QMap<int, QList<int>> graph = handler.createDelhiMetroGraph();  // You must have a method or way to access the graph
+    QMap<int, QList<std::pair<int, double>>> graph = handler.createDelhiMetroGraph();  // You must have a method or way to access the graph
 
-     handler.printAdjacencyList(stationMap, graph);
+    handler.printAdjacencyList(stationMap, graph);
 
     setWindowTitle("Delhi Metro Fare & Route");
     setStyleSheet("background-color: #1e1e1e; color: #FFFFFF;"); // Dark theme
@@ -222,33 +222,31 @@ void FarePage::populateStations() {
 
 void FarePage::calculateRoute() {
     MetroDatabaseHandler handler("data.db");
-    // RoutePlanner rp;
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
-    QMap<int, QList<int>> graph = handler.createDelhiMetroGraph();
+    QMap<int, QList<std::pair<int, double>>> graph = handler.createDelhiMetroGraph();
 
     QString source = sourceStation->currentText();
     QString destination = destinationStation->currentText();
 
     if (source == "Select Source Station" || destination == "Select Destination Station" || source == destination) {
-        routeDisplay->setPlainText("Please select valid and distinct stations.");
+        routeDisplay->setPlainText("⚠️ Please select valid and distinct stations.");
         return;
     }
 
     int srcId = -1, destId = -1;
-
     for (auto it = stationMap.begin(); it != stationMap.end(); ++it) {
         if (it.value().first == source) srcId = it.key();
         if (it.value().first == destination) destId = it.key();
     }
 
     if (srcId == -1 || destId == -1) {
-        routeDisplay->setPlainText("Station not found in the mapping.");
+        routeDisplay->setPlainText("❌ Station not found in the database.");
         return;
     }
 
-    // Determine route based on selected filter
-    QList<int> path;
+    // Get selected filter
     QString selectedFilter = filterDropdown->currentText();
+    QList<int> path;
 
     if (selectedFilter == "Minimum Distance") {
         path = planner->findShortestDistancePath(srcId, destId);
@@ -257,33 +255,31 @@ void FarePage::calculateRoute() {
     } else if (selectedFilter == "Minimum Time") {
         path = planner->findShortestTimePath(srcId, destId);
     } else {
-        // Default fallback to distance-based shortest path
-        path = planner->findShortestDistancePath(srcId, destId);
+        path = planner->findShortestDistancePath(srcId, destId); // default
     }
 
     if (path.isEmpty()) {
-        routeDisplay->setPlainText("No route found between selected stations.");
+        routeDisplay->setPlainText("🚫 No route found between selected stations.");
         return;
     }
 
     QStringList stationNames;
-    double totalDistance = 0;
+    double totalDistance = 0.0;
 
     for (int i = 0; i < path.size(); ++i) {
-        if (stationMap.contains(path[i])) {
+        if (stationMap.contains(path[i]))
             stationNames.append(stationMap[path[i]].first);
-        }
-        if (i > 0) {
+        if (i > 0)
             totalDistance += handler.getDistanceBetweenStations(path[i - 1], path[i]);
-        }
     }
 
+    // Display route
+    routeDisplay->setPlainText("🛤 Route:\n" + stationNames.join(" ➡ "));
+
+    // Calculate extras
     int interchanges = planner->calculateInterchanges(path);
-
-    routeDisplay->setPlainText(stationNames.join(" ➡ "));
-
     double fare = handler.calculateFare(path);
-    double time = totalDistance * 1.5;  // Example time estimate
+    double time = totalDistance * 1.5; // assuming 40 km/h = 1.5 min/km
 
     fareLabel->setText("💰 Fare: ₹ " + QString::number(fare, 'f', 0));
     timeLabel->setText("⏱ Estimated Time: " + QString::number(time, 'f', 0) + " mins");

@@ -58,9 +58,9 @@ QMap<int, std::pair<QString, double>> MetroDatabaseHandler::getStationCodeNameMa
 }
 
 
-QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
-    QMap<int, QList<int>> graph;
-
+QMap<int, QList<std::pair<int, double>>> MetroDatabaseHandler::createDelhiMetroGraph() {
+    QMap<int, QList<std::pair<int, double>>> graph;
+/*
     // BLUE LINE CONNECTIONS
     graph[1].append(2);
     graph[2].append(1);
@@ -491,29 +491,101 @@ QMap<int, QList<int>> MetroDatabaseHandler::createDelhiMetroGraph() {
     graph[206].append(205);
     graph[65].append(206); //Kalkaji Mandir
     graph[206].append(65);
+*/
+
+    // connecting adjacent stations
+    QSqlQuery query("SELECT Station_Code, Station_Name, line , distance FROM metro_database");
+    if (!query.exec()) {
+        qDebug() << "Query error:" << query.lastError().text();
+        return graph;
+    }
+
+    int code, lastCode;
+    QString name, lastName, line, lastLine;
+    double distance, lastDistance;
+
+    bool firstEntry = true;
+
+    while (query.next()) {
+        code = query.value(0).toInt();
+        name = query.value(1).toString();
+        line = query.value(2).toString();
+        distance = query.value(3).toDouble();
+
+        if (firstEntry || line != lastLine) {
+            firstEntry = false;
+        } else {
+            double netDist = abs(distance - lastDistance);
+            graph[code].append(qMakePair(lastCode, netDist));
+            graph[lastCode].append(qMakePair(code, netDist));
+        }
+
+        lastCode = code;
+        lastName = name;
+        lastLine = line;
+        lastDistance = distance;
+    }
+
+    // connecting intersections
+    // QSqlQuery query2("SELECT Station_Code, Station_Name, line FROM metro_database where Station_Name like '%Conn%'");
+    // if (!query2.exec()) {
+    //     qDebug() << "Query error:" << query2.lastError().text();
+    //     return graph;
+    // }
+
+    QSqlQuery query2("SELECT Station_Code, Station_Name FROM metro_database WHERE Station_Name LIKE '%Conn%'");
+    QMap<QString, QList<int>> stationGroups;
+
+    // Step 1: Group by clean name (strip " [Conn: ...]")
+    while (query2.next()) {
+        int code = query2.value(0).toInt();
+        QString fullName = query2.value(1).toString();
+
+        // Remove everything starting from " [Conn:"
+        QString baseName = fullName.section(" [Conn:", 0, 0).trimmed();
+
+        stationGroups[baseName].append(code);
+    }
+
+    // Step 2: Connect all combinations within each group
+    for (const auto &group : stationGroups) {
+        const QList<int> &codes = group;
+
+        for (int i = 0; i < codes.size(); ++i) {
+            for (int j = i + 1; j < codes.size(); ++j) {
+                int code1 = codes[i];
+                int code2 = codes[j];
+
+                graph[code1].append(qMakePair(code2, 0.0)); // weight = 0 for interchange
+                graph[code2].append(qMakePair(code1, 0.0));
+            }
+        }
+    }
 
     return graph;
+
 }
 
-void MetroDatabaseHandler::printAdjacencyList(const QMap<int, std::pair<QString, double>>& stationMap,
-                                              const QMap<int, QList<int>>& graph) {
+void MetroDatabaseHandler::printAdjacencyList(
+    const QMap<int, std::pair<QString, double>>& stationMap,
+    const QMap<int, QList<std::pair<int, double>>>& graph) {
+
     for (auto it = graph.begin(); it != graph.end(); ++it) {
         int srcCode = it.key();
-        const QList<int>& neighbors = it.value();
+        const QList<std::pair<int, double>>& neighbors = it.value();
 
         QString srcName = stationMap[srcCode].first;
 
-        qDebug() << "# " << srcCode << " : " << srcName << " - ";
+        qDebug() << "# " << srcCode << " : " << srcName << " - Connections:";
 
-        for (int destCode : neighbors) {
+        for (const auto& neighbor : neighbors) {
+            int destCode = neighbor.first;
+            double weight = neighbor.second;
+
             QString destName = stationMap[destCode].first;
 
-            double srcDist = stationMap[srcCode].second;
-            double destDist = stationMap[destCode].second;
-            double dist = qAbs(destDist - srcDist);  // Assuming distance from origin is used
-
-            qDebug() << " -> " << destCode << " : " << destName << " - :"
-                     << QString::number(dist, 'f', 1) << "km";
+            qDebug() << "    -> " << destCode << " : " << destName << " : "
+                     << QString::number(weight, 'f', 1) << " km";
         }
     }
 }
