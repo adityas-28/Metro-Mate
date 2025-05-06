@@ -263,18 +263,30 @@ void FarePage::calculateRoute() {
         return;
     }
 
-    QStringList stationNames;
+    QStringList stationDisplay;
     double totalDistance = 0.0;
 
+    QString previousLine = planner->getLine(path[0]).first;
+
     for (int i = 0; i < path.size(); ++i) {
-        if (stationMap.contains(path[i]))
-            stationNames.append(stationMap[path[i]].first);
+        QString stationName = stationMap[path[i]].first;
+        QString currentLine = planner->getLine(path[i]).first;
+
+        if (i > 0 && currentLine != previousLine) {
+            stationDisplay.append("<span style='color:red;'>" + stationName + "</span>");
+        } else {
+            stationDisplay.append(stationName);
+        }
+
         if (i > 0)
             totalDistance += handler.getDistanceBetweenStations(path[i - 1], path[i]);
+
+        previousLine = currentLine;
     }
 
-    // Display route
-    routeDisplay->setPlainText("🛤 Route:\n" + stationNames.join(" ➡ "));
+    // Set HTML formatted text
+    routeDisplay->setHtml("🛤 <b>Route:</b> " + stationDisplay.join(" ➡ "));
+
 
     // Calculate extras
     int interchanges = planner->calculateInterchanges(path);
