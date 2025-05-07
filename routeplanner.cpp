@@ -231,6 +231,7 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
     path.prepend(src);
     return path;
 }
+
 QList<int> RoutePlanner::findMinInterchangePath(int src, int dest) {
     MetroDatabaseHandler handler("data.db");
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();

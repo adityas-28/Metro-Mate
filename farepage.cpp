@@ -297,18 +297,18 @@ void FarePage::calculateRoute() {
         QString formattedName = "<span style='color:" + color + ";'>" + stationName + "</span>";
         stationDisplay.append(formattedName);
 
-        if (i > 0)
-            totalDistance += handler.getDistanceBetweenStations(path[i - 1], path[i]);
+        if (i > 0){
+            if(planner->getLine(path[i - 1]).first.split(" ").first().trimmed() != planner->getLine(path[i]).first.split(" ").first().trimmed()) continue;
+            else totalDistance += handler.getDistanceBetweenStations(path[i - 1], path[i]);
+        }
     }
 
     routeDisplay->setHtml("🛤 <b>Route:</b> " + stationDisplay.join(" ➡ "));
 
-
-
     // Calculate extras
     int interchanges = planner->calculateInterchanges(path);
     double fare = handler.calculateFare(path);
-    double time = totalDistance * 1.5; // assuming 40 km/h = 1.5 min/km
+    double time = totalDistance * 1.32; // assuming 45 km/h = 1.3 min/km
 
     fareLabel->setText("💰 Fare: ₹ " + QString::number(fare, 'f', 0));
     timeLabel->setText("⏱ Estimated Time: " + QString::number(time, 'f', 0) + " mins");
@@ -317,34 +317,39 @@ void FarePage::calculateRoute() {
 
 double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stationId2) {
     QSqlQuery query;
-    query.prepare("SELECT Distance FROM distance_between_stations WHERE Station1_Code = :stationId1 AND Station2_Code = :stationId2");
+    query.prepare("SELECT distance FROM metro_database WHERE Station_Code = :stationId1;");
     query.bindValue(":stationId1", stationId1);
-    query.bindValue(":stationId2", stationId2);
 
     if (!query.exec()) {
-      //  qDebug() << "Error executing query:" << query.lastError().text();
-        return 2.1; // Or throw an exception
+        qDebug() << "Error executing query for stationId1:" << query.lastError().text();
+        return 0;
     }
 
+    double d1, d2;
+
     if (query.next()) {
-        return query.value(0).toDouble();
+        d1 = query.value(0).toDouble();
     } else {
-        // Try the reverse direction
-        query.prepare("SELECT Distance FROM distance_between_stations WHERE Station1_Code = :stationId2 AND Station2_Code = :stationId1");
-        query.bindValue(":stationId1", stationId1);
-        query.bindValue(":stationId2", stationId2);
-        if(!query.exec()){
-           // qDebug() << "Error executing query:" << query.lastError().text();
-            return 0.0;
-        }
-        if(query.next()){
-            return query.value(0).toDouble();
-        }
-        else{
-            qDebug() << "Distance not found between stations " << stationId1 << " and " << stationId2;
-            return 0.0; // Or throw an exception
-        }
+        return 0;
     }
+
+    QSqlQuery query2;
+    query2.prepare("SELECT distance FROM metro_database WHERE Station_Code = :stationId2;");
+    query2.bindValue(":stationId2", stationId2);
+
+    if (!query2.exec()) {
+        qDebug() << "Error executing query for stationId2:" << query2.lastError().text();
+        return 0;
+    }
+
+    if (query2.next()) {
+        d2 = query2.value(0).toDouble();
+    } else {
+        return 0;
+    }
+
+    return std::abs(d1 - d2); // not working correctly
+    // return 2.15;
 }
 
 int RoutePlanner::calculateInterchanges(const QList<int>& path) {
