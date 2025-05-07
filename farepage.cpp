@@ -292,7 +292,7 @@ void FarePage::calculateRoute() {
 
         QString rawLineName = linePair.first;
         QString baseLineColor = rawLineName.split(" ").first().trimmed();
-        QString color = lineColors.value(baseLineColor, "#000000");
+        QString color = lineColors.value(baseLineColor, "#ffffff");
 
         QString formattedName = "<span style='color:" + color + ";'>" + stationName + "</span>";
         stationDisplay.append(formattedName);
@@ -322,7 +322,7 @@ double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stat
     query.bindValue(":stationId2", stationId2);
 
     if (!query.exec()) {
-        qDebug() << "Error executing query:" << query.lastError().text();
+      //  qDebug() << "Error executing query:" << query.lastError().text();
         return 2.1; // Or throw an exception
     }
 
@@ -334,7 +334,7 @@ double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stat
         query.bindValue(":stationId1", stationId1);
         query.bindValue(":stationId2", stationId2);
         if(!query.exec()){
-            qDebug() << "Error executing query:" << query.lastError().text();
+           // qDebug() << "Error executing query:" << query.lastError().text();
             return 0.0;
         }
         if(query.next()){
@@ -403,7 +403,7 @@ std::pair<QString, QString> RoutePlanner::getLine(int stationId) {
     query.bindValue(":stationId", stationId);
 
     if (!query.exec()) {
-        qDebug() << "Error executing queryy: " << query.lastError().text();
+      //  qDebug() << "Error executing queryy: " << query.lastError().text();
         return std::make_pair("", ""); // Return an empty string on error.
     }
     if (query.next()){

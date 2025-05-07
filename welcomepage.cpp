@@ -2,6 +2,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QGraphicsDropShadowEffect>
+#include <QDir>
+#include <QCoreApplication>
 
 WelcomePage::WelcomePage(QWidget *parent)
     : QWidget(parent)
@@ -15,7 +17,7 @@ WelcomePage::WelcomePage(QWidget *parent)
     layout->setContentsMargins(50, 80, 50, 80);
 
     // Title with custom styles (No white background)
-    QLabel *title = new QLabel("🚇 <span style='color:#2E8B57;'> Welcome to MetroMate</span>", this);
+    QLabel *title = new QLabel(" <span style='color:#2E8B57;'> Welcome to MetroMate</span>", this);
     title->setStyleSheet(R"(
         font-size: 60px;
         font-weight: 600;
@@ -33,6 +35,14 @@ WelcomePage::WelcomePage(QWidget *parent)
     shadow->setOffset(3, 3);
     shadow->setColor(QColor(0, 0, 0, 120));
     title->setGraphicsEffect(shadow);
+
+    QString imagePath = QDir::currentPath() + "/abcde.jpg";
+    QPixmap logoPixmap(imagePath);// Make sure this path is valid
+    QLabel *logoLabel = new QLabel(this);
+    logoLabel->setPixmap(logoPixmap.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    logoLabel->setAlignment(Qt::AlignCenter);
+    layout->addWidget(logoLabel, 0, Qt::AlignHCenter);
+
 
     // Buttons for login and signup
     loginButton = new QPushButton("🔐 Login", this);

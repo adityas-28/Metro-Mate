@@ -20,7 +20,7 @@ LoginPage::LoginPage(QWidget *parent)
     layout->setSpacing(20);
     layout->setContentsMargins(40, 60, 40, 60);
 
-    QLabel *title = new QLabel("🔐 <span style='color:#00000;'> Login to MetroMate </span>", this);
+    QLabel *title = new QLabel("🔐 <span style='color:#ffffff;'> Login to MetroMate </span>", this);
     title->setStyleSheet(R"(
         font-size: 45px;
         font-weight: 600;

@@ -36,13 +36,27 @@ SignupPage::SignupPage(QWidget *parent)
     // --- Corrected here ---
     usernameLineEdit = new QLineEdit(this);
     usernameLineEdit->setPlaceholderText("Choose Username");
-    usernameLineEdit->setStyleSheet("font-size: 16px; padding: 8px; color: grey;");
+    usernameLineEdit->setStyleSheet(R"(
+        font-size: 16px;
+        padding: 8px;
+        border-radius: 5px;
+        background-color: #3a3a3a;
+        color: #ffffff;
+        border: 1px solid #666;
+    )");
     layout->addWidget(usernameLineEdit);
 
     passwordLineEdit = new QLineEdit(this);
     passwordLineEdit->setPlaceholderText("Create Password");
     passwordLineEdit->setEchoMode(QLineEdit::Password);
-    passwordLineEdit->setStyleSheet("font-size: 16px; padding: 8px; color: grey;");
+    passwordLineEdit->setStyleSheet(R"(
+        font-size: 16px;
+        padding: 8px;
+        border-radius: 5px;
+        background-color: #3a3a3a;
+        color: #ffffff;
+        border: 1px solid #666;
+    )");
     layout->addWidget(passwordLineEdit);
     // -----------------------
 
