@@ -347,8 +347,8 @@ double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stat
         return 0;
     }
 
-    // return std::abs(d1 - d2); // not working correctly
-    return 2.15;
+    return std::abs(d1 - d2); // not working correctly
+    // return 2.15;
 }
 
 int RoutePlanner::calculateInterchanges(const QList<int>& path) {
