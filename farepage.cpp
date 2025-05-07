@@ -250,13 +250,17 @@ void FarePage::calculateRoute() {
     QList<int> path;
 
     if (selectedFilter == "Minimum Distance") {
-        path = planner->findShortestDistancePath(srcId, destId);
-    } else if (selectedFilter == "Minimum Interchange") {
+        // path = planner->findShortestDistancePath(srcId, destId);
         path = planner->findMinInterchangePath(srcId, destId);
+    } else if (selectedFilter == "Minimum Interchange") {
+        // path = planner->findMinInterchangePath(srcId, destId);
+        path = planner->findShortestDistancePath(srcId, destId);
     } else if (selectedFilter == "Minimum Time") {
-        path = planner->findShortestTimePath(srcId, destId);
+        //path = planner->findShortestTimePath(srcId, destId);
+        path = planner->findMinInterchangePath(srcId, destId);
     } else {
-        path = planner->findShortestDistancePath(srcId, destId); // default
+        // path = planner->findShortestDistancePath(srcId, destId);
+        path = planner->findMinInterchangePath(srcId, destId);
     }
 
     if (path.isEmpty()) {
@@ -264,29 +268,41 @@ void FarePage::calculateRoute() {
         return;
     }
 
+    QMap<QString, QString> lineColors = {
+        {"Blue", "#90D5FF"},
+        {"Yellow", "#FFD700"},
+        {"Voilet", "#8A2BE2"},
+        {"Red", "#FF0000"},
+        {"Green", "#008000"},
+        {"Magenta", "#FF00FF"},
+        {"Orange", "#FFA500"},
+        {"Pink", "#FF69B4"},
+        {"Grey", "#A9A9A9"},
+        {"Aqua", "#00FFFF"}
+        // Add more if needed
+    };
+
     QStringList stationDisplay;
     double totalDistance = 0.0;
-
     QString previousLine = planner->getLine(path[0]).first;
 
     for (int i = 0; i < path.size(); ++i) {
+        auto linePair = planner->getLine(path[i]);
         QString stationName = stationMap[path[i]].first;
-        QString currentLine = planner->getLine(path[i]).first;
 
-        if (i > 0 && currentLine != previousLine) {
-            stationDisplay.append("<span style='color:red;'>" + stationName + "</span>");
-        } else {
-            stationDisplay.append(stationName);
-        }
+        QString rawLineName = linePair.first;
+        QString baseLineColor = rawLineName.split(" ").first().trimmed();
+        QString color = lineColors.value(baseLineColor, "#000000");
+
+        QString formattedName = "<span style='color:" + color + ";'>" + stationName + "</span>";
+        stationDisplay.append(formattedName);
 
         if (i > 0)
             totalDistance += handler.getDistanceBetweenStations(path[i - 1], path[i]);
-
-        previousLine = currentLine;
     }
 
-    // Set HTML formatted text
     routeDisplay->setHtml("🛤 <b>Route:</b> " + stationDisplay.join(" ➡ "));
+
 
 
     // Calculate extras

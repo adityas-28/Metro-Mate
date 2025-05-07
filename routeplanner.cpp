@@ -231,62 +231,54 @@ QList<int> RoutePlanner::findShortestDistancePath(int src, int dest) {
     path.prepend(src);
     return path;
 }
-
 QList<int> RoutePlanner::findMinInterchangePath(int src, int dest) {
     MetroDatabaseHandler handler("data.db");
     QMap<int, std::pair<QString, double>> stationMap = handler.getStationCodeNameMap();
     QMap<int, QList<std::pair<int, double>>> graph = handler.createDelhiMetroGraph();
 
-    QMap<int, int> parent;
-    QSet<int> visited;
-    QQueue<int> q;
+    struct State {
+        int station;
+        QString line;
+        int interchanges;
+        QList<int> path;
+    };
 
-    visited.insert(src);
-    q.enqueue(src);
+    QQueue<State> queue;
+    QSet<QString> visited;
 
-    bool found = false;
+    QString initialLine = getLine(src).first;
 
-    while (!q.isEmpty()) {
-        int u = q.dequeue();
-        if (u == dest) {
-            found = true;
-            break;
+    State start = { src, initialLine, 0, {src} };
+    queue.enqueue(start);
+    visited.insert(QString("%1|%2").arg(src).arg(initialLine));
+
+    while (!queue.isEmpty()) {
+        State current = queue.dequeue();
+
+        if (current.station == dest) {
+            return current.path;
         }
 
-        for (auto v0 : graph[u]) {
-            int v = v0.first;
-            if (!visited.contains(v)) {
-                visited.insert(v);
-                parent[v] = u;
-                q.enqueue(v);
-            }
+        for (const auto &neighbor : graph[current.station]) {
+            int nextStation = neighbor.first;
+            QString nextLine = getLine(nextStation).first;
+            QString key = QString("%1|%2").arg(nextStation).arg(nextLine);
+
+            if (visited.contains(key))
+                continue;
+
+            int newInterchanges = current.interchanges + ((nextLine != current.line) ? 1 : 0);
+
+            QList<int> newPath = current.path;
+            newPath.append(nextStation);
+
+            State nextState = { nextStation, nextLine, newInterchanges, newPath };
+            queue.enqueue(nextState);
+            visited.insert(key);
         }
     }
 
-    QList<int> path;
-
-    if (src == dest) {
-        path.append(src);
-        return path;
-    }
-
-    if (!found || !parent.contains(dest)) {
-        qDebug() << "No path found between" << src << "and" << dest;
-        QMessageBox::warning(nullptr, "Path Error", "No valid path found between the stations.");
-        return {};
-    }
-
-    // Reconstruct path safely
-    for (int at = dest; at != src; ) {
-        path.prepend(at);
-        if (!parent.contains(at)) {
-            qDebug() << "Path reconstruction failed at station" << at;
-            QMessageBox::warning(nullptr, "Path Error", "Path reconstruction failed.");
-            return {};
-        }
-        at = parent[at];
-    }
-
-    path.prepend(src);
-    return path;
+    qDebug() << "No min-interchange path found between" << src << "and" << dest;
+    QMessageBox::warning(nullptr, "Path Error", "No valid path found with minimum interchanges.");
+    return {};
 }
