@@ -10,7 +10,6 @@
 #include <QMessageBox>
 #include <QDir>
 
-
 LoginPage::LoginPage(QWidget *parent)
     : QWidget(parent)
 {

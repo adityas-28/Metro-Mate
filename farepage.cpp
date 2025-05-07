@@ -279,7 +279,6 @@ void FarePage::calculateRoute() {
         {"Pink", "#FF69B4"},
         {"Grey", "#A9A9A9"},
         {"Aqua", "#00FFFF"}
-        // Add more if needed
     };
 
     QStringList stationDisplay;
@@ -348,8 +347,8 @@ double MetroDatabaseHandler::getDistanceBetweenStations(int stationId1, int stat
         return 0;
     }
 
-    return std::abs(d1 - d2); // not working correctly
-    // return 2.15;
+    // return std::abs(d1 - d2); // not working correctly
+    return 2.15;
 }
 
 int RoutePlanner::calculateInterchanges(const QList<int>& path) {
@@ -387,15 +386,15 @@ int RoutePlanner::calculatePathLength(const QList<int>& path) {
 double MetroDatabaseHandler::calculateFare(const QList<int>& path) {
     RoutePlanner *planner;
     int pathLength = planner->calculatePathLength(path);
-    if (pathLength <= 3) {
+    if (pathLength <= 2) {
         return 10.0;
-    } else if (pathLength <= 6) {
+    } else if (pathLength <= 5) {
         return 20.0;
-    } else if (pathLength <= 9) {
-        return 30.0;
     } else if (pathLength <= 12) {
+        return 30.0;
+    } else if (pathLength <= 18) {
         return 40.0;
-    } else if (pathLength <= 15) {
+    } else if (pathLength <= 24) {
         return 50.0;
     } else {
         return 60.0;
